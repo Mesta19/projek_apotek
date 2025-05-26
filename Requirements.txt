@@ -1,0 +1,4 @@
+Yang di perlukan : 
+Database MySQL dengan Xampp
+Composer require picqer/php-barcode-generator
+npm install --save-dev html5-qrcode
