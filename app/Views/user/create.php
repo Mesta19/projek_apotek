@@ -34,14 +34,12 @@
         </div>
 
         <div class="form-group mb-3">
-            <label for="level" class="mb-2">Level</label>
+            <label for="level" class="mb-2">Wewenang</label>
             <select class="form-control" id="level" name="level">
             <?php if (session()->get('level') === 'Developer') : ?>
-                    <option value="developer">Developer</option>
+                    <option value="Developer">Admin / Developer</option>
                 <?php endif; ?>
-                <option value="admin">Admin</option>
                 <option value="kasir">Kasir</option>
-                <option value="kasir">Guest</option>
             </select>
         </div>
 
