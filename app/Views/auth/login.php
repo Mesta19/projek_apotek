@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login ke ApotekKu</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         body {
             min-height: 100vh;
@@ -109,7 +110,7 @@
             transform: scale(1.01);
         }
 
-        .alert-danger {
+        .alert-danger { /* Gaya untuk div error PHP tetap ada, jika ingin ditampilkan bersamaan */
             border-radius: 6px;
             margin-bottom: 1.5rem;
             padding: 1rem;
@@ -171,6 +172,67 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            const loginForm = document.querySelector('form[action="/auth/proses_login"]');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+
+            if (loginForm && usernameInput && passwordInput) {
+                loginForm.addEventListener('submit', function (event) {
+                    const usernameValue = usernameInput.value.trim();
+                    const passwordValue = passwordInput.value.trim();
+
+                    if (usernameValue === '' && passwordValue === '') {
+                        event.preventDefault(); 
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Perhatian!',
+                            text: 'Username dan password tidak boleh kosong!',
+                        }).then(() => {
+                            usernameInput.focus();
+                        });
+                    } else if (usernameValue === '') {
+                        event.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Perhatian!',
+                            text: 'Username tidak boleh kosong!',
+                        }).then(() => {
+                            usernameInput.focus();
+                        });
+                    } else if (passwordValue === '') {
+                        event.preventDefault();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Perhatian!',
+                            text: 'Password tidak boleh kosong!',
+                        }).then(() => {
+                            passwordInput.focus();
+                        });
+                    }
+                });
+            }
+
+            const errorAlertDiv = document.querySelector('.alert.alert-danger');
+            if (errorAlertDiv) {
+                const errorMessageText = errorAlertDiv.textContent || errorAlertDiv.innerText;
+                if (errorMessageText.trim() !== '') {
+                    Swal.fire({
+                        icon: 'error', // Icon error untuk pesan dari server
+                        title: 'Login Gagal',
+                        text: errorMessageText.trim(),
+                    });
+                    // Opsional: Jika Anda ingin menyembunyikan div error Bootstrap setelah SweetAlert muncul
+                    // agar tidak ada pesan ganda, Anda bisa uncomment baris berikut:
+                    // errorAlertDiv.style.display = 'none'; 
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
