@@ -35,38 +35,61 @@ class User extends BaseController
         return view('user/create', $data);
     }
 
-    public function save()
-    {
-        $validationRules = [
-            'username' => 'required|is_unique[users.username]',
-            'password' => 'required|min_length[5]',
-            'level' => 'required',
-            'nama_lengkap' => 'required'
-        ];
+   public function save()
+{
+    $validationRules = [
+        'username' => 'required|is_unique[users.username]',
+        'password' => 'required|min_length[5]',
+        'level' => 'required',
+        'nama_lengkap' => 'required'
+    ];
 
-        if (!$this->validate($validationRules)) {
-            return redirect()->to('/user/create')->withInput();
-        }
+    $validationMessages = [
+        'username' => [
+            'required' => 'Username harus diisi.',
+            'is_unique' => 'Username sudah digunakan.'
+        ],
+        'password' => [
+            'required' => 'Password harus diisi.',
+            'min_length' => 'Password minimal 5 karakter.'
+        ],
+        'level' => [
+            'required' => 'Level harus dipilih.'
+        ],
+        'nama_lengkap' => [
+            'required' => 'Nama lengkap harus diisi.'
+        ]
+    ];
 
-        $password = $this->request->getPost('password');
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    if (!$this->validate($validationRules, $validationMessages)) {
+    return view('user/create', [
+        'title' => 'Tambah User',
+        'navbar' => 'User',
+        'validation' => $this->validator
+    ]);
+}
 
-        $data = [
-            'username' => $this->request->getPost('username'),
-            'password' => $hashedPassword,
-            'level' => $this->request->getPost('level'),
-            'nama_lengkap' => $this->request->getPost('nama_lengkap')
-        ];
+    $password = $this->request->getPost('password');
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        $this->userModel->insertUser($data);
-        session()->setFlashdata('pesan', 'Data user berhasil ditambahkan.');
-        return redirect()->to('/user');
-    }
+    $data = [
+        'username' => $this->request->getPost('username'),
+        'password' => $hashedPassword,
+        'level' => $this->request->getPost('level'),
+        'nama_lengkap' => $this->request->getPost('nama_lengkap')
+    ];
+
+    $this->userModel->insertUser($data);
+    session()->setFlashdata('pesan', 'Data user berhasil ditambahkan.');
+    return redirect()->to('/user');
+}
+
 
     public function edit($id)
     {
         $data = [
             'title' => 'Edit User',
+            'navbar'=>'User',
             'user' => $this->userModel->find($id),
             'validation' => $this->validation
         ];
@@ -74,33 +97,34 @@ class User extends BaseController
     }
 
     public function update($id)
-    {
-        $validationRules = [
-            'username' => 'required|is_unique[users.username,id_user,{id_user}]',
-            'level' => 'required',
-            'nama_lengkap' => 'required'
-        ];
+{
+    $validationRules = [
+        'username' => "required|is_unique[users.username,id_user,{$id}]",
+        'level' => 'required',
+        'nama_lengkap' => 'required'
+    ];
 
-        if (!$this->validate($validationRules)) {
-            return redirect()->to('/user/edit/' . $id)->withInput();
-        }
-
-        $data = [
-            'username' => $this->request->getPost('username'),
-            'level' => $this->request->getPost('level'),
-            'nama_lengkap' => $this->request->getPost('nama_lengkap')
-        ];
-
-        $password = $this->request->getPost('password');
-        if (!empty($password)) {
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $data['password'] = $hashedPassword;
-        }
-
-        $this->userModel->updateUser($id, $data);
-        session()->setFlashdata('pesan', 'Data user berhasil diubah.');
-        return redirect()->to('/user');
+    if (!$this->validate($validationRules)) {
+        return redirect()->to('/user/edit/' . $id)->withInput()->with('validation', $this->validator);
     }
+
+    $data = [
+        'username' => $this->request->getPost('username'),
+        'level' => $this->request->getPost('level'),
+        'nama_lengkap' => $this->request->getPost('nama_lengkap')
+    ];
+
+    $password = $this->request->getPost('password');
+    if (!empty($password)) {
+        $data['password'] = password_hash($password, PASSWORD_DEFAULT);
+    }
+
+    $this->userModel->updateUser($id, $data);
+
+    session()->setFlashdata('pesan', 'Data user berhasil diubah.');
+    return redirect()->to('/user');
+}
+
 
     public function delete($id)
     {

@@ -41,26 +41,32 @@ class Kategori extends BaseController
     }
 
     public function save()
-    {
-        // Definisikan aturan validasi
-        $validationRules = [
-            'nama_kategori' => 'required|is_unique[kategori_obat.nama_kategori]', // Contoh: nama_kategori harus unik
-        ];
+{
+    // Definisikan aturan validasi dan pesan custom
+    $validationRules = [
+        'nama_kategori' => 'required|is_unique[kategori_obat.nama_kategori]',
+    ];
 
-        if (!$this->validate($validationRules)) {
-            // Jika validasi gagal, simpan error ke session dan redirect ke form create
-            $this->session->setFlashdata('errors', $this->validation->getErrors());
-            return redirect()->to('/kategori/create')->withInput(); // withInput() agar data yang sudah diisi tidak hilang
-        }
+    $validationMessages = [
+        'nama_kategori' => [
+            'required' => 'Nama kategori harus diisi.',
+            'is_unique' => 'Nama kategori sudah ada.'
+        ]
+    ];
 
-        $data = [
-            'nama_kategori' => $this->request->getPost('nama_kategori')
-        ];
-
-        $this->kategoriModel->insertKategori($data);
-        $this->session->setFlashdata('pesan', 'Data kategori obat berhasil ditambahkan.');
-        return redirect()->to('/kategori');
+    if (!$this->validate($validationRules, $validationMessages)) {
+        $this->session->setFlashdata('errors', $this->validation->getErrors());
+        return redirect()->to('/kategori/create')->withInput();
     }
+
+    $data = [
+        'nama_kategori' => $this->request->getPost('nama_kategori')
+    ];
+
+    $this->kategoriModel->insertKategori($data);
+    $this->session->setFlashdata('pesan', 'Data kategori obat berhasil ditambahkan.');
+    return redirect()->to('/kategori');
+}
 
     public function edit($id)
     {

@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
-use App\Models\Obat_model; 
+use App\Models\Obat_model;
 use Config\Services;
 use App\Models\Kategori_obat_model;
 
@@ -21,145 +21,156 @@ class Obat extends BaseController
         $this->session = \Config\Services::session();
         $this->validation = \Config\Services::validation();
     }
-    
+
 
     public function index()
     {
+        // 1. Ambil ID kategori dari URL jika ada
+        $kategoriId = $this->request->getGet('kategori');
+
+        // 2. Panggil method getObat() dari model Anda.
+        // Kita akan asumsikan/modifikasi getObat() agar bisa menerima filter
+        // Jika getObat() Anda belum bisa memfilter, cara ini adalah yang paling umum
+        $obatData = $this->obatModel->getObat(false, $kategoriId);
+
+        // 3. Siapkan data untuk dikirim ke view
         $data = [
             'title' => 'Daftar Obat',
-            'navbar' => 'Obat',
-            'obat' => $this->obatModel->getObat()
+            'navbar' => 'Obat', // Anda menggunakan 'navbar', kita pertahankan
+            'obat' => $obatData,
+            'kategori' => $this->kategoriModel->getKategori(), // Ambil semua kategori untuk dropdown
+            'selected_kategori' => $kategoriId // Kirim ID kategori yang aktif ke view
         ];
 
         return view('obat/index', $data);
     }
 
     public function create()
-{
-    // Generate barcode
-    $barcode = 'OBAT-' . rand(1000, 9999);
-    $generator = new BarcodeGeneratorPNG();
-    $barcodeBinary = $generator->getBarcode($barcode, $generator::TYPE_CODE_128);
+    {
+        // Generate barcode
+        $barcode = 'OBAT-' . rand(1000, 9999);
+        $generator = new BarcodeGeneratorPNG();
+        $barcodeBinary = $generator->getBarcode($barcode, $generator::TYPE_CODE_128);
 
-    // Simpan file PNG
-    $barcodePath = FCPATH . 'barcodes/' . $barcode . '.png';
-    file_put_contents($barcodePath, $barcodeBinary);
+        // Simpan file PNG
+        $barcodePath = FCPATH . 'barcodes/' . $barcode . '.png';
+        file_put_contents($barcodePath, $barcodeBinary);
 
-    // Encode base64 untuk preview di form
-    $barcodeBase64 = base64_encode($barcodeBinary);
+        // Encode base64 untuk preview di form
+        $barcodeBase64 = base64_encode($barcodeBinary);
 
-    return view('obat/create', [
-        'barcode' => $barcode,
-        'navbar' => 'Obat',
-        'barcodeImage' => $barcodeBase64,
-        'validation' => \Config\Services::validation(),
-        'kategori' => $this->kategoriModel->getKategori()
-    ]);
-}
-
-
-public function save()
-{
-    $validationRules = [
-        'nama_obat' => 'required',
-        'id_kategori' => 'required',
-        'harga' => 'required|numeric',
-        'stok' => 'required|integer',
-        'gambar' => 'uploaded[gambar]|max_size[gambar,1024]|mime_in[gambar,image/png,image/jpg,image/jpeg]',
-        'barcode' => 'required' // tambahkan validasi
-    ];
-
-    if (!$this->validate($validationRules)) {
-        $this->session->setFlashdata('errors', $this->validation->getErrors());
-        return redirect()->to('/obat/create')->withInput();
+        return view('obat/create', [
+            'barcode' => $barcode,
+            'navbar' => 'Obat',
+            'barcodeImage' => $barcodeBase64,
+            'validation' => \Config\Services::validation(),
+            'kategori' => $this->kategoriModel->getKategori()
+        ]);
     }
 
-    // Upload gambar
-    $fileGambar = $this->request->getFile('gambar');
-    $namaGambar = $fileGambar->getRandomName();
-    $fileGambar->move('uploads', $namaGambar);
 
-    $barcode = $this->request->getPost('barcode');
+    public function save()
+    {
+        $validationRules = [
+            'nama_obat' => 'required',
+            'id_kategori' => 'required',
+            'harga' => 'required|numeric',
+            'stok' => 'required|integer',
+            'gambar' => 'uploaded[gambar]|max_size[gambar,1024]|mime_in[gambar,image/png,image/jpg,image/jpeg]',
+            'barcode' => 'required' // tambahkan validasi
+        ];
 
-    $data = [
-        'nama_obat' => $this->request->getPost('nama_obat'),
-        'id_kategori' => $this->request->getPost('id_kategori'),
-        'deskripsi' => $this->request->getPost('deskripsi'),
-        'harga' => $this->request->getPost('harga'),
-        'stok' => $this->request->getPost('stok'),
-        'satuan' => $this->request->getPost('satuan'),
-        'gambar' => $namaGambar,
-        'barcode' => $barcode
-    ];
+        if (!$this->validate($validationRules)) {
+            $this->session->setFlashdata('errors', $this->validation->getErrors());
+            return redirect()->to('/obat/create')->withInput();
+        }
 
-    $this->obatModel->insertObat($data);
-    $this->session->setFlashdata('pesan', 'Data obat berhasil ditambahkan.');
-    return redirect()->to('/obat');
-}
+        // Upload gambar
+        $fileGambar = $this->request->getFile('gambar');
+        $namaGambar = $fileGambar->getRandomName();
+        $fileGambar->move('uploads', $namaGambar);
 
+        $barcode = $this->request->getPost('barcode');
 
+        $data = [
+            'nama_obat' => $this->request->getPost('nama_obat'),
+            'id_kategori' => $this->request->getPost('id_kategori'),
+            'deskripsi' => $this->request->getPost('deskripsi'),
+            'harga' => $this->request->getPost('harga'),
+            'stok' => $this->request->getPost('stok'),
+            'satuan' => $this->request->getPost('satuan'),
+            'gambar' => $namaGambar,
+            'barcode' => $barcode
+        ];
 
-// Contoh fungsi buat convert PNG ke JPG dan kirim sebagai download
-public function downloadBarcode($id)
-{
-    $obat = $this->obatModel->getObat($id);
-
-    if (!$obat || empty($obat['barcode'])) {
-        return redirect()->back()->with('error', 'Barcode tidak ditemukan.');
-    }
-
-    $barcodeFilename = $obat['barcode'] . '.png';
-    $barcodePath = FCPATH . 'barcodes/' . $barcodeFilename;
-
-    if (!file_exists($barcodePath)) {
-        return redirect()->back()->with('error', 'File barcode tidak ditemukan.');
-    }
-
-    return $this->response->download($barcodePath, null)
-        ->setFileName($barcodeFilename)
-        ->setContentType('image/png');
-}
-
-
-
-
-public function updateBarcode($id)
-{
-    if (!$this->request->isAJAX() || !$this->request->getMethod() === 'post') {
+        $this->obatModel->insertObat($data);
+        $this->session->setFlashdata('pesan', 'Data obat berhasil ditambahkan.');
         return redirect()->to('/obat');
     }
 
-    $model = new \App\Models\Obat_model();
-
-    // Generate kode barcode baru
-    $newBarcode = uniqid('OBAT-');
-
-    // Generate barcode image
-    $generator = new BarcodeGeneratorPNG();
-    $barcodeImage = $generator->getBarcode($newBarcode, $generator::TYPE_CODE_128);
-
-    // Simpan file barcode ke folder barcodes/
-    $barcodeDir = FCPATH . 'barcodes/';
-
-if (!is_dir($barcodeDir)) {
-    mkdir($barcodeDir, 0755, true);
-}
-
-$barcodeFileName = $newBarcode . '.png';
-file_put_contents($barcodeDir . $barcodeFileName, $barcodeImage);
 
 
+    // Contoh fungsi buat convert PNG ke JPG dan kirim sebagai download
+    public function downloadBarcode($id)
+    {
+        $obat = $this->obatModel->getObat($id);
 
-    // Update di database (hanya simpan kode barcode)
-    $updateData = ['barcode' => $newBarcode];
-    $updated = $model->update($id, $updateData);
+        if (!$obat || empty($obat['barcode'])) {
+            return redirect()->back()->with('error', 'Barcode tidak ditemukan.');
+        }
 
-    if ($updated) {
-        return $this->response->setJSON(['success' => true, 'barcode' => $newBarcode]);
-    } else {
-        return $this->response->setJSON(['success' => false, 'message' => 'Gagal update database']);
+        $barcodeFilename = $obat['barcode'] . '.png';
+        $barcodePath = FCPATH . 'barcodes/' . $barcodeFilename;
+
+        if (!file_exists($barcodePath)) {
+            return redirect()->back()->with('error', 'File barcode tidak ditemukan.');
+        }
+
+        return $this->response->download($barcodePath, null)
+            ->setFileName($barcodeFilename)
+            ->setContentType('image/png');
     }
-}
+
+
+
+
+    public function updateBarcode($id)
+    {
+        if (!$this->request->isAJAX() || !$this->request->getMethod() === 'post') {
+            return redirect()->to('/obat');
+        }
+
+        $model = new \App\Models\Obat_model();
+
+        // Generate kode barcode baru
+        $newBarcode = uniqid('OBAT-');
+
+        // Generate barcode image
+        $generator = new BarcodeGeneratorPNG();
+        $barcodeImage = $generator->getBarcode($newBarcode, $generator::TYPE_CODE_128);
+
+        // Simpan file barcode ke folder barcodes/
+        $barcodeDir = FCPATH . 'barcodes/';
+
+        if (!is_dir($barcodeDir)) {
+            mkdir($barcodeDir, 0755, true);
+        }
+
+        $barcodeFileName = $newBarcode . '.png';
+        file_put_contents($barcodeDir . $barcodeFileName, $barcodeImage);
+
+
+
+        // Update di database (hanya simpan kode barcode)
+        $updateData = ['barcode' => $newBarcode];
+        $updated = $model->update($id, $updateData);
+
+        if ($updated) {
+            return $this->response->setJSON(['success' => true, 'barcode' => $newBarcode]);
+        } else {
+            return $this->response->setJSON(['success' => false, 'message' => 'Gagal update database']);
+        }
+    }
 
 
 
@@ -196,7 +207,7 @@ file_put_contents($barcodeDir . $barcodeFileName, $barcodeImage);
             'id_kategori' => 'required',
             'harga' => 'required|numeric',
             'stok' => 'required|integer',
-            'gambar' => 'max_size[gambar,1024]|mime_in[gambar,image/png,image/jpg,image/jpeg]'  // Ubah ukuran ke 1024KB (1MB)
+            'gambar' => 'max_size[gambar,2048]|mime_in[gambar,image/png,image/jpg,image/jpeg]'  // Ubah ukuran ke 1024KB (1MB)
         ];
 
         if (!$this->validate($validationRules)) {
@@ -234,9 +245,20 @@ file_put_contents($barcodeDir . $barcodeFileName, $barcodeImage);
     public function delete($id)
     {
         $obat = $this->obatModel->getObat($id);
-        if ($obat['gambar'] != null) {
-            unlink('uploads/' . $obat['gambar']);
+        $db = \Config\Database::connect();
+        $builder = $db->table('detail_transaksi');
+        $exists = $builder->where('id_obat', $id)->countAllResults();
+        if ($exists > 0) {
+            session()->setFlashdata('pesan', 'Obat tidak bisa dihapus karena sedang digunakan dalam transaksi.');
+            return redirect()->to('/obat');
         }
+        if ($obat['gambar']) {
+            $filePath = FCPATH . 'uploads/' . $obat['gambar'];
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
 
         $this->obatModel->deleteObat($id);
         $this->session->setFlashdata('pesan', 'Data obat berhasil dihapus.');
@@ -244,139 +266,191 @@ file_put_contents($barcodeDir . $barcodeFileName, $barcodeImage);
     }
 
     public function ajaxCariBarcode()
-{
-    $request = service('request');
-    $isAjax = $request->isAJAX();
+    {
+        $request = service('request');
+        $isAjax = $request->isAJAX();
 
-    $input = $this->request->getJSON();
-    $barcode = $input->barcode ?? null;
+        $input = $this->request->getJSON();
+        $barcode = $input->barcode ?? null;
 
-    if (!$barcode) {
+        if (!$barcode) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Barcode tidak dikirim.'
+            ]);
+        }
+
+        $obat = $this->obatModel->where('barcode', $barcode)->first();
+
+        if (!$obat) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Obat dengan barcode tersebut tidak ditemukan.'
+            ]);
+        }
+
+        $session = session();
+        $keranjang = $session->get('keranjang') ?? [];
+
+        $id = $obat['id_obat'];
+
+        if (isset($keranjang[$id])) {
+            $keranjang[$id]['jumlah'] += 1;
+            $keranjang[$id]['subtotal'] = $keranjang[$id]['jumlah'] * $keranjang[$id]['harga'];
+        } else {
+            $keranjang[$id] = [
+                'id_obat' => $obat['id_obat'],
+                'nama_obat' => $obat['nama_obat'],
+                'harga' => $obat['harga'],
+                'jumlah' => 1,
+                'subtotal' => $obat['harga']
+            ];
+        }
+
+        $session->set('keranjang', $keranjang);
+
         return $this->response->setJSON([
-            'success' => false,
-            'message' => 'Barcode tidak dikirim.'
+            'success' => true,
+            'data' => $obat
         ]);
     }
 
-    $obat = $this->obatModel->where('barcode', $barcode)->first();
 
-    if (!$obat) {
-        return $this->response->setJSON([
-            'success' => false,
-            'message' => 'Obat dengan barcode tersebut tidak ditemukan.'
+    public function scan($id_obat)
+    {
+        $obat = $this->obatModel->find($id_obat);
+        if (!$obat) {
+            return redirect()->back()->with('error', 'Obat tidak ditemukan.');
+        }
+
+        $session = session();
+        $keranjang = $session->get('keranjang') ?? [];
+
+        if (isset($keranjang[$id_obat])) {
+            $keranjang[$id_obat]['jumlah'] += 1;
+        } else {
+            $keranjang[$id_obat] = [
+                'id' => $obat['id'],
+                'nama' => $obat['nama_obat'],
+                'harga' => $obat['harga'],
+                'jumlah' => 1
+            ];
+        }
+
+        $session->set('keranjang', $keranjang);
+        return redirect()->to('/obat/keranjang');
+    }
+    public function keranjang()
+    {
+        $keranjang = session()->get('keranjang') ?? [];
+        $total = 0;
+
+        foreach ($keranjang as $item) {
+            $total += $item['harga'] * $item['jumlah'];
+        }
+
+        return view('obat/keranjang', [
+            'keranjang' => $keranjang,
+            'total' => $total
         ]);
     }
 
-    $session = session();
-    $keranjang = $session->get('keranjang') ?? [];
+    public function clearKeranjang()
+    {
+        session()->remove('keranjang');
 
-    $id = $obat['id_obat'];
+        // Cek apakah request AJAX
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => true]);
+        }
 
-    if (isset($keranjang[$id])) {
-        $keranjang[$id]['jumlah'] += 1;
-        $keranjang[$id]['subtotal'] = $keranjang[$id]['jumlah'] * $keranjang[$id]['harga'];
-    } else {
-        $keranjang[$id] = [
-            'id_obat' => $obat['id_obat'],
-            'nama_obat' => $obat['nama_obat'],
-            'harga' => $obat['harga'],
-            'jumlah' => 1,
-            'subtotal' => $obat['harga']
-        ];
+        // Jika bukan AJAX, redirect biasa
+        return redirect()->to(base_url('transaksi'))->with('success', 'Keranjang dikosongkan.');
     }
 
-    $session->set('keranjang', $keranjang);
 
-    return $this->response->setJSON([
-        'success' => true,
-        'data' => $obat
-    ]);
-}
+    public function proses()
+    {
+        $keranjang = session()->get('keranjang') ?? [];
+        $total = 0;
 
+        foreach ($keranjang as $item) {
+            $total += $item['harga'] * $item['jumlah'];
+        }
 
-public function scan($id_obat)
-{
-    $obat = $this->obatModel->find($id_obat);
-    if (!$obat) {
-        return redirect()->back()->with('error', 'Obat tidak ditemukan.');
+        $bayar = (int) $this->request->getPost('bayar');
+        $kembalian = $bayar - $total;
+
+        if ($kembalian < 0) {
+            return redirect()->back()->with('error', 'Uang tidak cukup.');
+        }
+
+        // Simpan hasil transaksi ke flashdata
+        session()->setFlashdata('transaksi_selesai', [
+            'keranjang' => $keranjang,
+            'total' => $total,
+            'bayar' => $bayar,
+            'kembalian' => $kembalian
+        ]);
+
+        // Kosongkan keranjang
+        session()->remove('keranjang');
+
+        return redirect()->to(base_url('transaksi'));
     }
 
-    $session = session();
-    $keranjang = $session->get('keranjang') ?? [];
+    public function ajaxCariNama()
+    {
+        $input = $this->request->getJSON();
+        $namaObat = $input->nama_obat ?? '';
 
-    if (isset($keranjang[$id_obat])) {
-        $keranjang[$id_obat]['jumlah'] += 1;
-    } else {
-        $keranjang[$id_obat] = [
-            'id' => $obat['id'],
-            'nama' => $obat['nama_obat'],
-            'harga' => $obat['harga'],
-            'jumlah' => 1
-        ];
+        if (empty($namaObat)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Nama obat tidak boleh kosong.']);
+        }
+
+        // Cari obat berdasarkan nama (gunakan LIKE untuk pencarian fleksibel)
+        $obat = $this->obatModel->where('nama_obat', $namaObat)->first();
+        // Atau jika Anda ingin pencarian yang lebih fleksibel:
+        // $obat = $this->obatModel->like('nama_obat', $namaObat, 'both')->first();
+
+
+        if ($obat) {
+            // Obat ditemukan, tambahkan ke keranjang sesi
+            $keranjang = $this->session->get('keranjang') ?? [];
+
+            if (isset($keranjang[$obat['id_obat']])) {
+                // Jika obat sudah ada, tambahkan jumlahnya
+                $keranjang[$obat['id_obat']]['jumlah']++;
+            } else {
+                // Jika obat belum ada, tambahkan item baru
+                $keranjang[$obat['id_obat']] = [
+                    'nama_obat' => $obat['nama_obat'],
+                    'harga' => $obat['harga'], // Sesuaikan dengan nama kolom harga di DB Anda
+                    'jumlah' => 1
+                ];
+            }
+            // Hitung ulang subtotal
+            $keranjang[$obat['id_obat']]['subtotal'] = $keranjang[$obat['id_obat']]['harga'] * $keranjang[$obat['id_obat']]['jumlah'];
+
+
+            $this->session->set('keranjang', $keranjang);
+            return $this->response->setJSON(['success' => true, 'message' => 'Obat berhasil ditambahkan!']);
+        } else {
+            return $this->response->setJSON(['success' => false, 'message' => 'Obat tidak ditemukan.']);
+        }
     }
 
-    $session->set('keranjang', $keranjang);
-    return redirect()->to('/obat/keranjang');
-}
-public function keranjang()
-{
-    $keranjang = session()->get('keranjang') ?? [];
-    $total = 0;
+    public function ajaxNamaSuggestions()
+    {
+        if (!$this->request->isAJAX()) return;
 
-    foreach ($keranjang as $item) {
-        $total += $item['harga'] * $item['jumlah'];
+        $keyword = $this->request->getGet('q');
+        $results = $this->obatModel->like('nama_obat', $keyword)->findAll(10);
+
+        $data = array_map(function ($item) {
+            return ['nama_obat' => $item['nama_obat']];
+        }, $results);
+
+        return $this->response->setJSON($data);
     }
-
-    return view('obat/keranjang', [
-        'keranjang' => $keranjang,
-        'total' => $total
-    ]);
-}
-
-public function clearKeranjang()
-{
-    session()->remove('keranjang');
-
-    // Cek apakah request AJAX
-    if ($this->request->isAJAX()) {
-        return $this->response->setJSON(['success' => true]);
-    }
-
-    // Jika bukan AJAX, redirect biasa
-    return redirect()->to(base_url('transaksi'))->with('success', 'Keranjang dikosongkan.');
-}
-
-
-public function proses()
-{
-    $keranjang = session()->get('keranjang') ?? [];
-    $total = 0;
-
-    foreach ($keranjang as $item) {
-        $total += $item['harga'] * $item['jumlah'];
-    }
-
-    $bayar = (int) $this->request->getPost('bayar');
-    $kembalian = $bayar - $total;
-
-    if ($kembalian < 0) {
-        return redirect()->back()->with('error', 'Uang tidak cukup.');
-    }
-
-    // Simpan hasil transaksi ke flashdata
-    session()->setFlashdata('transaksi_selesai', [
-        'keranjang' => $keranjang,
-        'total' => $total,
-        'bayar' => $bayar,
-        'kembalian' => $kembalian
-    ]);
-
-    // Kosongkan keranjang
-    session()->remove('keranjang');
-
-    return redirect()->to(base_url('transaksi'));
-}
-
-
-
 }

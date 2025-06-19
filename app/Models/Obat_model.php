@@ -10,22 +10,25 @@ class Obat_model extends Model
     protected $primaryKey = 'id_obat';
     protected $allowedFields = ['nama_obat', 'id_kategori', 'barcode', 'deskripsi', 'harga', 'stok', 'satuan', 'gambar'];
 
-    public function getObat($id = false)
+    public function getObat($id = false, $kategoriId = false)
     {
-        if ($id === false) {
-            return $this->db->table('obat')
-                ->select('obat.*, kategori_obat.nama_kategori')
-                ->join('kategori_obat', 'kategori_obat.id_kategori = obat.id_kategori')
-                ->get()
-                ->getResultArray();
+        // 1. Buat dasar query builder agar tidak berulang
+        $builder = $this->db->table($this->table)
+            ->select('obat.*, kategori_obat.nama_kategori')
+            ->join('kategori_obat', 'kategori_obat.id_kategori = obat.id_kategori', 'left');
+
+        // 2. Jika ada ID spesifik, cari satu obat (untuk halaman edit/detail)
+        if ($id !== false) {
+            return $builder->where('obat.id_obat', $id)->get()->getRowArray();
         }
 
-        return $this->db->table('obat')
-            ->select('obat.*, kategori_obat.nama_kategori')
-            ->join('kategori_obat', 'kategori_obat.id_kategori = obat.id_kategori')
-            ->where('obat.id_obat', $id)
-            ->get()
-            ->getRowArray();
+        // 3. JIKA ADA FILTER KATEGORI, tambahkan kondisi 'where'
+        if ($kategoriId !== false && !empty($kategoriId)) {
+            $builder->where('obat.id_kategori', $kategoriId);
+        }
+
+        // 4. Kembalikan semua hasil (sudah terfilter jika ada kategoriId)
+        return $builder->get()->getResultArray();
     }
 
     public function insertObat($data)

@@ -19,6 +19,9 @@ $routes->get('obat/downloadBarcode/(:segment)', 'Obat::downloadBarcode/$1');
 $routes->get('/obat/downloadBarcode/(:num)', 'Obat::downloadBarcode/$1');
 $routes->post('obat/updateBarcode/(:num)', 'Obat::updateBarcode/$1');
 $routes->post('/obat/ajaxCariBarcode', 'Obat::ajaxCariBarcode');
+$routes->post('obat/ajaxCariNama', 'Obat::ajaxCariNama');
+$routes->get('obat/ajaxNamaSuggestions', 'Obat::ajaxNamaSuggestions');
+
 
 
 

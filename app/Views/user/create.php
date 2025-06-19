@@ -36,14 +36,14 @@
         <div class="form-group mb-3">
             <label for="level" class="mb-2">Wewenang</label>
             <select class="form-control" id="level" name="level">
-            <?php if (session()->get('level') === 'Developer') : ?>
+                <?php if (session()->get('level') === 'Developer') : ?>
                     <option value="Developer">Admin / Developer</option>
                 <?php endif; ?>
                 <option value="kasir">Kasir</option>
             </select>
         </div>
 
-        <div class="form-group mb-3">
+        <div class="form-group mb-4">
             <label for="nama_lengkap" class="mb-2">Nama Lengkap</label>
             <input
                 type="text"
@@ -57,7 +57,8 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary mt-3">Simpan</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+        <a href="/user" class="btn btn-secondary ms-2">Batal</a>
     </form>
 </div>
 <?= $this->endSection(); ?>
