@@ -16,6 +16,7 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
 - PHP 8.1 atau lebih baru (sudah termasuk di XAMPP terbaru)
 - Composer (https://getcomposer.org/)
 - Git (https://git-scm.com/)
+- **Koneksi internet diperlukan agar fitur scan barcode dan tampilan UI web dapat berfungsi dengan semestinya.**
 
 > **Disarankan:** Selalu gunakan XAMPP, letakkan project di folder `htdocs` (misal: `C:/xampp/htdocs/`)
 
