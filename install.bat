@@ -9,6 +9,17 @@ IF NOT EXIST .env (
     echo File .env sudah ada, dilewati
 )
 
+REM 1b. Install composer dependencies
+where composer >nul 2>nul
+IF %ERRORLEVEL% NEQ 0 (
+    echo Composer tidak ditemukan! Silakan install Composer terlebih dahulu: https://getcomposer.org/download/
+    pause
+    exit /b 1
+) ELSE (
+    echo Menjalankan composer install...
+    composer install
+)
+
 REM 2. Migrasi database
 php spark migrate
 

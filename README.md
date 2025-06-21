@@ -34,7 +34,7 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
 1. Buka **Command Prompt** di folder `C:/xampp/htdocs/`.
 2. Clone project:
    ```bash
-   git clone https://github.com/username/projek_apotek.git
+   git clone https://github.com/Mesta19/projek_apotek.git
    cd projek_apotek
    ```
 3. Jalankan script instalasi otomatis:
@@ -57,7 +57,7 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
 1. Buka terminal di folder `htdocs` XAMPP Anda.
 2. Clone project:
    ```bash
-   git clone https://github.com/username/projek_apotek.git
+   git clone https://github.com/Mesta19/projek_apotek.git
    cd projek_apotek
    ```
 3. Jalankan perintah instalasi otomatis:
@@ -84,7 +84,7 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
    - Tempatkan folder project ini di `htdocs` (misal: `C:/xampp/htdocs/projek_apotek`)
    - Jika dari GitHub:
      ```bash
-     git clone https://github.com/username/projek_apotek.git
+     git clone https://github.com/Mesta19/projek_apotek.git
      cd projek_apotek
      ```
 2. **Install Dependency Composer**
