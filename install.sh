@@ -9,6 +9,9 @@ sed -i 's/^\s*database.default.port\s*=.*/database.default.port = 3306/' .env
 sed -i 's/^\s*database.default.username\s*=.*/database.default.username = root/' .env
 sed -i 's/^\s*database.default.password\s*=.*/database.default.password = /' .env
 
+# Hilangkan spasi di depan baris konfigurasi database
+sed -i 's/^ \+database\.default/database.default/' .env
+
 # 1. Copy file env ke .env jika belum ada
 if [ ! -f .env ]; then
     if [ ! -f env ]; then
@@ -31,14 +34,20 @@ else
     echo "File .env sudah ada, dilewati"
 fi
 
-# 1a. Membuat database MySQL jika belum ada
+# 1a. Pastikan MySQL berjalan
+if ! mysqladmin ping -h127.0.0.1 --silent; then
+    echo "[ERROR] MySQL tidak berjalan. Silakan jalankan MySQL terlebih dahulu (misal: sudo /opt/lampp/lampp startmysql)"
+    exit 1
+fi
+
+# 1b. Membuat database MySQL jika belum ada
 if ! php create_db.php; then
     echo "[ERROR] Gagal membuat database MySQL."
     echo "Solusi: Pastikan konfigurasi database di .env benar dan MySQL berjalan."
     exit 1
 fi
 
-# 1b. Install composer dependencies
+# 1c. Install composer dependencies
 if ! command -v composer >/dev/null 2>&1; then
     echo "Composer tidak ditemukan! Silakan install Composer terlebih dahulu: https://getcomposer.org/download/"
     exit 1

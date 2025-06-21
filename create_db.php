@@ -21,8 +21,16 @@ $dbHost = getEnvVar('database.default.hostname', 'localhost');
 $dbUser = getEnvVar('database.default.username', 'root');
 $dbPass = getEnvVar('database.default.password', '');
 $dbName = getEnvVar('database.default.database', 'db_apotek');
+$dbPort = getEnvVar('database.default.port', '3306');
 
-$conn = new mysqli($dbHost, $dbUser, $dbPass);
+// Cek apakah socket LAMPP ada
+$lamppSocket = '/opt/lampp/var/mysql/mysql.sock';
+if (file_exists($lamppSocket)) {
+    $conn = new mysqli($dbHost, $dbUser, $dbPass, '', (int)$dbPort, $lamppSocket);
+} else {
+    $conn = new mysqli($dbHost, $dbUser, $dbPass, '', (int)$dbPort);
+}
+
 if ($conn->connect_error) {
     echo "[ERROR] Gagal koneksi ke MySQL: " . $conn->connect_error . PHP_EOL;
     exit(1);
