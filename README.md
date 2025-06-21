@@ -21,37 +21,80 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
   - json (default aktif)
   - mysqlnd (untuk MySQL/MariaDB)
 - Composer (https://getcomposer.org/)
-- Web server (disarankan XAMPP, folder di `xampp/htdocs`)
+- Web server (disarankan XAMPP, folder di `htdocs`)
 - MySQL/MariaDB
 
 ## Langkah Instalasi
 
-1. **Download/Clone Project**
+### Cara Otomatis (Windows)
 
+1. Pastikan sudah install PHP, Composer, dan requirement di atas.
+2. Buka terminal/cmd di folder project ini.
+3. Jalankan:
+
+   ```bat
+   install.bat
+   ```
+
+   Script ini akan:
+
+   - Membuat file .env dari env jika belum ada
+   - Migrasi database
+   - Menjalankan seeder database
+   - Website siap digunakan
+
+4. Jalankan website:
+   ```bash
+   php spark serve
+   # Buka http://localhost:8080 di browser
+   ```
+
+### Cara Otomatis (Linux & Mac)
+
+1. Pastikan sudah install PHP, Composer, dan requirement di atas.
+2. Buka terminal di folder project ini.
+3. Jalankan perintah berikut:
+
+   ```bash
+   [ -f .env ] || cp env .env
+   php spark migrate
+   php spark db:seed DatabaseSeeder
+   ```
+
+   Perintah di atas akan:
+
+   - Membuat file .env dari env jika belum ada
+   - Migrasi database
+   - Menjalankan seeder database
+   - Website siap digunakan
+
+4. Jalankan website:
+   ```bash
+   php spark serve
+   # Buka http://localhost:8080 di browser
+   ```
+
+### Cara Manual
+
+1. **Download/Clone Project**
    - Tempatkan folder project ini di `xampp/htdocs/` (misal: `xampp/htdocs/projek_apotek`)
    - Jika dari GitHub:
      ```bash
      git clone https://github.com/username/projek_apotek.git
      cd projek_apotek
      ```
-
 2. **Install Dependency Composer**
-
    ```bash
    composer install
    ```
-
 3. **Copy & Edit File Environment**
-
    ```bash
    cp env .env
-   # Edit file .env, sesuaikan konfigurasi database Anda
+   # Edit file .env jika ingin override konfigurasi database
    ```
-
 4. **Konfigurasi Database**
-
    - Buat database baru di phpMyAdmin/MySQL, misal: `db_apotek`
-   - Edit file `.env` pada bagian berikut:
+   - Edit file `.env` atau `app/Config/Database.php` pada bagian berikut:
      ```
      database.default.hostname = 127.0.0.1
      database.default.database = db_apotek
@@ -59,17 +102,12 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
      database.default.password =
      database.default.DBDriver = MySQLi
      ```
-
 5. **Migrasi & Seeder Database**
    Jalankan perintah berikut di terminal/cmd dari folder project:
-
    ```bash
    php spark migrate
    php spark db:seed DatabaseSeeder
    ```
-
-   Ini akan membuat seluruh tabel dan mengisi data awal (user, kategori, obat, transaksi, dll).
-
 6. **Menjalankan Website**
    ```bash
    php spark serve
