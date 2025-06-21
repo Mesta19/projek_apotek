@@ -12,72 +12,76 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
 
 ## Requirement
 
-- PHP 8.1 atau lebih baru
-- Ekstensi PHP yang wajib aktif:
-  - intl
-  - mbstring
-  - curl
-  - gd
-  - json (default aktif)
-  - mysqlnd (untuk MySQL/MariaDB)
+- XAMPP (https://www.apachefriends.org/) — WAJIB, untuk Apache & MySQL
+- PHP 8.1 atau lebih baru (sudah termasuk di XAMPP terbaru)
 - Composer (https://getcomposer.org/)
-- Web server (disarankan XAMPP, folder di `htdocs`)
-- MySQL/MariaDB
+- Git (https://git-scm.com/)
 
-## Langkah Instalasi
+> **Disarankan:** Selalu gunakan XAMPP, letakkan project di folder `htdocs` (misal: `C:/xampp/htdocs/`)
 
-### Cara Otomatis (Windows)
+## Langkah Instalasi & Setup Awal
 
-1. Pastikan sudah install PHP, Composer, dan requirement di atas.
-2. Buka terminal/cmd di folder project ini.
-3. Jalankan:
+### 1. Install & Siapkan XAMPP
 
+- Download dan install XAMPP sesuai OS Anda.
+- Jalankan XAMPP Control Panel, aktifkan **Apache** dan **MySQL**.
+- Buka phpMyAdmin (`http://localhost/phpmyadmin`), buat database baru, misal: `db_apotek`.
+
+### 2. Clone Project & Instalasi Otomatis
+
+#### a. Windows
+
+1. Buka **Command Prompt** di folder `C:/xampp/htdocs/`.
+2. Clone project:
+   ```bash
+   git clone https://github.com/username/projek_apotek.git
+   cd projek_apotek
+   ```
+3. Jalankan script instalasi otomatis:
    ```bat
    install.bat
    ```
-
    Script ini akan:
-
    - Membuat file .env dari env jika belum ada
    - Migrasi database
    - Menjalankan seeder database
    - Website siap digunakan
-
 4. Jalankan website:
    ```bash
    php spark serve
    # Buka http://localhost:8080 di browser
    ```
 
-### Cara Otomatis (Linux & Mac)
+#### b. Linux & Mac
 
-1. Pastikan sudah install PHP, Composer, dan requirement di atas.
-2. Buka terminal di folder project ini.
-3. Jalankan perintah berikut:
-
+1. Buka terminal di folder `htdocs` XAMPP Anda.
+2. Clone project:
    ```bash
+   git clone https://github.com/username/projek_apotek.git
+   cd projek_apotek
+   ```
+3. Jalankan perintah instalasi otomatis:
+   ```bash
+   composer install
    [ -f .env ] || cp env .env
    php spark migrate
    php spark db:seed DatabaseSeeder
    ```
-
    Perintah di atas akan:
-
    - Membuat file .env dari env jika belum ada
    - Migrasi database
    - Menjalankan seeder database
    - Website siap digunakan
-
 4. Jalankan website:
    ```bash
    php spark serve
    # Buka http://localhost:8080 di browser
    ```
 
-### Cara Manual
+### 3. (Opsional) Cara Manual
 
 1. **Download/Clone Project**
-   - Tempatkan folder project ini di `xampp/htdocs/` (misal: `xampp/htdocs/projek_apotek`)
+   - Tempatkan folder project ini di `htdocs` (misal: `C:/xampp/htdocs/projek_apotek`)
    - Jika dari GitHub:
      ```bash
      git clone https://github.com/username/projek_apotek.git
