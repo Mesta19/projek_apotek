@@ -19,17 +19,9 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
 
 > **Disarankan:** Selalu gunakan XAMPP, letakkan project di folder `htdocs` (misal: `C:/xampp/htdocs/`)
 
-## Langkah Instalasi & Setup Awal
+## Instalasi Otomatis (Disarankan)
 
-### 1. Install & Siapkan XAMPP
-
-- Download dan install XAMPP sesuai OS Anda.
-- Jalankan XAMPP Control Panel, aktifkan **Apache** dan **MySQL**.
-- Buka phpMyAdmin (`http://localhost/phpmyadmin`), buat database baru, misal: `db_apotek`.
-
-### 2. Clone Project & Instalasi Otomatis
-
-#### a. Windows
+### Windows
 
 1. Buka **Command Prompt** di folder `C:/xampp/htdocs/`.
 2. Clone project:
@@ -43,6 +35,8 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
    ```
    Script ini akan:
    - Membuat file .env dari env jika belum ada
+   - Membuat database MySQL otomatis sesuai konfigurasi
+   - Install dependency composer
    - Migrasi database
    - Menjalankan seeder database
    - Website siap digunakan
@@ -52,7 +46,7 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
    # Buka http://localhost:8080 di browser
    ```
 
-#### b. Linux & Mac
+### Linux & Mac
 
 1. Buka terminal di folder `htdocs` XAMPP Anda.
 2. Clone project:
@@ -64,11 +58,14 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
    ```bash
    composer install
    [ -f .env ] || cp env .env
+   php create_db.php
    php spark migrate
    php spark db:seed DatabaseSeeder
    ```
    Perintah di atas akan:
    - Membuat file .env dari env jika belum ada
+   - Membuat database MySQL otomatis sesuai konfigurasi
+   - Install dependency composer
    - Migrasi database
    - Menjalankan seeder database
    - Website siap digunakan
@@ -78,45 +75,9 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
    # Buka http://localhost:8080 di browser
    ```
 
-### 3. (Opsional) Cara Manual
+> **Catatan:** Semua proses setup (termasuk pembuatan database) dilakukan otomatis oleh script instalasi di atas. Tidak perlu membuat database manual di phpMyAdmin.
 
-1. **Download/Clone Project**
-   - Tempatkan folder project ini di `htdocs` (misal: `C:/xampp/htdocs/projek_apotek`)
-   - Jika dari GitHub:
-     ```bash
-     git clone https://github.com/Mesta19/projek_apotek.git
-     cd projek_apotek
-     ```
-2. **Install Dependency Composer**
-   ```bash
-   composer install
-   ```
-3. **Copy & Edit File Environment**
-   ```bash
-   cp env .env
-   # Edit file .env jika ingin override konfigurasi database
-   ```
-4. **Konfigurasi Database**
-   - Buat database baru di phpMyAdmin/MySQL, misal: `db_apotek`
-   - Edit file `.env` atau `app/Config/Database.php` pada bagian berikut:
-     ```
-     database.default.hostname = 127.0.0.1
-     database.default.database = db_apotek
-     database.default.username = root
-     database.default.password =
-     database.default.DBDriver = MySQLi
-     ```
-5. **Migrasi & Seeder Database**
-   Jalankan perintah berikut di terminal/cmd dari folder project:
-   ```bash
-   php spark migrate
-   php spark db:seed DatabaseSeeder
-   ```
-6. **Menjalankan Website**
-   ```bash
-   php spark serve
-   # Buka http://localhost:8080 di browser
-   ```
+---
 
 ## Akun Default Login
 
