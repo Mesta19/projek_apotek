@@ -1,16 +1,41 @@
-# Projek Apotek - CodeIgniter 4
+# Projek Website Kasir Apotek (CodeIgniter 4)
+
+Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
+
+- Manajemen data obat
+- Manajemen kategori obat
+- Manajemen user
+- Transaksi penjualan layaknya kasir apotek
+- Cetak barcode, upload gambar obat, dan fitur pendukung lain
+
+---
+
+## Requirement
+
+- PHP 8.1 atau lebih baru
+- Ekstensi PHP yang wajib aktif:
+  - intl
+  - mbstring
+  - curl
+  - gd
+  - json (default aktif)
+  - mysqlnd (untuk MySQL/MariaDB)
+- Composer (https://getcomposer.org/)
+- Web server (disarankan XAMPP, folder di `xampp/htdocs`)
+- MySQL/MariaDB
 
 ## Langkah Instalasi
 
-1. **Clone Repository**
+1. **Download/Clone Project**
 
-   ```bash
-   git clone https://github.com/username/projek_apotek.git
-   cd projek_apotek
-   ```
+   - Tempatkan folder project ini di `xampp/htdocs/` (misal: `xampp/htdocs/projek_apotek`)
+   - Jika dari GitHub:
+     ```bash
+     git clone https://github.com/username/projek_apotek.git
+     cd projek_apotek
+     ```
 
 2. **Install Dependency Composer**
-   Pastikan sudah install Composer: https://getcomposer.org/
 
    ```bash
    composer install
@@ -25,8 +50,8 @@
 
 4. **Konfigurasi Database**
 
-   - Buat database MySQL/MariaDB, misal: `db_apotek`
-   - Edit `.env` bagian:
+   - Buat database baru di phpMyAdmin/MySQL, misal: `db_apotek`
+   - Edit file `.env` pada bagian berikut:
      ```
      database.default.hostname = 127.0.0.1
      database.default.database = db_apotek
@@ -35,104 +60,34 @@
      database.default.DBDriver = MySQLi
      ```
 
-5. **Jalankan Migrasi & Seeder**
+5. **Migrasi & Seeder Database**
+   Jalankan perintah berikut di terminal/cmd dari folder project:
 
    ```bash
    php spark migrate
    php spark db:seed DatabaseSeeder
    ```
 
-6. **Jalankan Server Development**
+   Ini akan membuat seluruh tabel dan mengisi data awal (user, kategori, obat, transaksi, dll).
+
+6. **Menjalankan Website**
    ```bash
    php spark serve
    # Buka http://localhost:8080 di browser
    ```
 
-## Akun Default
+## Akun Default Login
 
 - Username: `developer`
 - Password: `developer`
 - Level: `Developer`
 
-## Fitur
-
-- Manajemen Obat, Kategori, Transaksi, User
-- Barcode Generator
-- Responsive UI
-
-## Catatan
+## Catatan Penting
 
 - Folder upload/gambar/barcode sudah disiapkan di `public/assets/`.
 - Jika ingin reset data, jalankan ulang seeder: `php spark db:seed DatabaseSeeder`
+- Jika ada error ekstensi PHP, aktifkan melalui `php.ini` (XAMPP: menu PHP > php.ini > cari dan hilangkan tanda `;` pada extension yang dibutuhkan).
 
 ---
 
-# CodeIgniter 4 Application Starter
-
-## What is CodeIgniter?
-
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
-
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
-
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
-
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
-
-## Installation & updates
-
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
-
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
-
-## Setup
-
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
-
-## Important Change with index.php
-
-`index.php` is no longer in the root of the project! It has been moved inside the _public_ folder,
-for better security and separation of components.
-
-This means that you should configure your web server to "point" to your project's _public_ folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter _public/..._, as the rest of your logic and the
-framework are exposed.
-
-**Please** read the user guide for a better explanation of how CI4 works!
-
-## Repository Management
-
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
-
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
-
-## Server Requirements
-
-PHP version 8.1 or higher is required, with the following extensions installed:
-
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
-
-> [!WARNING]
->
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
-
-Additionally, make sure that the following extensions are enabled in your PHP:
-
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+Panduan ini hanya untuk instalasi dan setup awal. Untuk pengembangan lebih lanjut, silakan sesuaikan sesuai kebutuhan Anda.
