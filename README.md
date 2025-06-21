@@ -55,15 +55,12 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
    git clone https://github.com/Mesta19/projek_apotek.git
    cd projek_apotek
    ```
-3. Jalankan perintah instalasi otomatis:
+3. Jalankan script instalasi otomatis:
    ```bash
-   composer install
-   [ -f .env ] || cp env .env
-   php create_db.php
-   php spark migrate
-   php spark db:seed DatabaseSeeder
+   chmod +x install.sh
+   ./install.sh
    ```
-   Perintah di atas akan:
+   Script ini akan:
    - Membuat file .env dari env jika belum ada
    - Membuat database MySQL otomatis sesuai konfigurasi
    - Install dependency composer
