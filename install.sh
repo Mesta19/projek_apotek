@@ -3,8 +3,24 @@
 
 set -e
 
+# 1. Pastikan konfigurasi database di .env sudah benar
+sed -i 's/^\s*database.default.hostname\s*=.*/database.default.hostname = 127.0.0.1/' .env
+sed -i 's/^\s*database.default.port\s*=.*/database.default.port = 3306/' .env
+sed -i 's/^\s*database.default.username\s*=.*/database.default.username = root/' .env
+sed -i 's/^\s*database.default.password\s*=.*/database.default.password = /' .env
+
 # 1. Copy file env ke .env jika belum ada
 if [ ! -f .env ]; then
+    if [ ! -f env ]; then
+        if [ -f "env copy.txt" ]; then
+            mv "env copy.txt" env
+            echo "File 'env copy.txt' ditemukan dan diubah menjadi 'env'."
+        else
+            echo "[ERROR] File 'env' tidak ditemukan, dan 'env copy.txt' juga tidak ada."
+            echo "Solusi: Pastikan file 'env' atau 'env copy.txt' ada di folder ini."
+            exit 1
+        fi
+    fi
     cp env .env || { 
         echo "[ERROR] Gagal menyalin file env ke .env.";
         echo "Solusi: Pastikan file 'env' ada di folder ini dan tidak sedang digunakan aplikasi lain.";
