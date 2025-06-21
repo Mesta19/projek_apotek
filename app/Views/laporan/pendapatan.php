@@ -96,7 +96,7 @@ Laporan Pendapatan
     </div>
     <div class="card-body">
         <?php if (!empty($tanggal_awal) && !empty($tanggal_akhir)) : ?>
-            <p class="text-muted">Menampilkan produk terlaris dari tanggal <?= esc(date('d M Y', strtotime($tanggal_awal))) ?> s/d <?= esc(date('d M Y', strtotime($tanggal_akhir))) ?>.</p>
+            <p class="text-muted">Menampilkan produk terjual dari tanggal <?= esc(date('d M Y', strtotime($tanggal_awal))) ?> s/d <?= esc(date('d M Y', strtotime($tanggal_akhir))) ?>.</p>
         <?php else : ?>
             <p class="text-muted">Filter tanggal untuk melihat rincian obat terjual pada periode tertentu.</p>
         <?php endif; ?>
