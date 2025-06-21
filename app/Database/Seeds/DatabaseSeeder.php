@@ -8,9 +8,21 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        // Panggil seeder lain dalam urutan yang benar
+        // Nonaktifkan foreign key check
+        $this->db->query('SET FOREIGN_KEY_CHECKS=0');
+        $this->db->table('detail_transaksi')->truncate();
+        $this->db->table('transaksi')->truncate();
+        $this->db->table('obat')->truncate();
+        $this->db->table('kategori_obat')->truncate();
+        $this->db->table('users')->truncate();
+        // Aktifkan kembali foreign key check
+        $this->db->query('SET FOREIGN_KEY_CHECKS=1');
+
+        // Seed data sesuai urutan relasi
         $this->call('KategoriObatSeeder');
-        $this->call('UsersSeeder');
-        // Panggil seeder obat dan transaksi jika Anda membuatnya
+        $this->call('ObatSeeder');
+        $this->call('UserSeeder');
+        $this->call('TransaksiSeeder');
+        $this->call('DetailTransaksiSeeder');
     }
 }

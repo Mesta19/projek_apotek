@@ -4,11 +4,11 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateTables extends Migration
+class CreateTablesFromSql extends Migration
 {
     public function up()
     {
-        // Create Users Table
+        // users
         $this->forge->addField([
             'id_user' => [
                 'type' => 'INT',
@@ -18,34 +18,28 @@ class CreateTables extends Migration
             ],
             'username' => [
                 'type' => 'VARCHAR',
-                'constraint' => 255,
+                'constraint' => 50,
+                'unique' => true,
             ],
             'password' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
             ],
+            'level' => [
+                'type' => 'VARCHAR',
+                'constraint' => 20,
+            ],
             'nama_lengkap' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
-            ],
-            'level' => [
-                'type' => 'VARCHAR',
-                'constraint' => 50,
-                'default' => 'kasir',
-            ],
-            'created_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
-            ],
-            'updated_at' => [
-                'type' => 'DATETIME',
                 'null' => true,
             ],
         ]);
         $this->forge->addKey('id_user', true);
+        $this->forge->addUniqueKey('username');
         $this->forge->createTable('users');
 
-        // Create Kategori Table
+        // kategori_obat
         $this->forge->addField([
             'id_kategori' => [
                 'type' => 'INT',
@@ -55,21 +49,13 @@ class CreateTables extends Migration
             ],
             'nama_kategori' => [
                 'type' => 'VARCHAR',
-                'constraint' => 100,
-            ],
-            'created_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
-            ],
-            'updated_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
+                'constraint' => 255,
             ],
         ]);
         $this->forge->addKey('id_kategori', true);
         $this->forge->createTable('kategori_obat');
 
-        // Create Obat Table
+        // obat
         $this->forge->addField([
             'id_obat' => [
                 'type' => 'INT',
@@ -77,19 +63,23 @@ class CreateTables extends Migration
                 'unsigned' => true,
                 'auto_increment' => true,
             ],
-            'kode_obat' => [
-                'type' => 'VARCHAR',
-                'constraint' => 20,
-                'unique' => true,
-            ],
             'nama_obat' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
+            ],
+            'barcode' => [
+                'type' => 'VARCHAR',
+                'constraint' => 100,
+                'null' => true,
             ],
             'id_kategori' => [
                 'type' => 'INT',
                 'constraint' => 11,
                 'unsigned' => true,
+            ],
+            'deskripsi' => [
+                'type' => 'TEXT',
+                'null' => true,
             ],
             'harga' => [
                 'type' => 'DECIMAL',
@@ -99,8 +89,9 @@ class CreateTables extends Migration
                 'type' => 'INT',
                 'constraint' => 11,
             ],
-            'deskripsi' => [
-                'type' => 'TEXT',
+            'satuan' => [
+                'type' => 'VARCHAR',
+                'constraint' => 50,
                 'null' => true,
             ],
             'gambar' => [
@@ -108,36 +99,20 @@ class CreateTables extends Migration
                 'constraint' => 255,
                 'null' => true,
             ],
-            'created_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
-            ],
-            'updated_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
-            ],
         ]);
         $this->forge->addKey('id_obat', true);
+        $this->forge->addUniqueKey('barcode');
+        $this->forge->addKey('id_kategori');
         $this->forge->addForeignKey('id_kategori', 'kategori_obat', 'id_kategori', 'CASCADE', 'CASCADE');
         $this->forge->createTable('obat');
 
-        // Create Transaksi Table
+        // transaksi
         $this->forge->addField([
             'id_transaksi' => [
                 'type' => 'INT',
                 'constraint' => 11,
                 'unsigned' => true,
                 'auto_increment' => true,
-            ],
-            'kode_transaksi' => [
-                'type' => 'VARCHAR',
-                'constraint' => 20,
-                'unique' => true,
-            ],
-            'id_user' => [
-                'type' => 'INT',
-                'constraint' => 11,
-                'unsigned' => true,
             ],
             'tanggal_transaksi' => [
                 'type' => 'DATETIME',
@@ -146,25 +121,18 @@ class CreateTables extends Migration
                 'type' => 'DECIMAL',
                 'constraint' => '10,2',
             ],
-            'status' => [
-                'type' => 'ENUM',
-                'constraint' => ['pending', 'completed', 'cancelled'],
-                'default' => 'pending',
-            ],
-            'created_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
-            ],
-            'updated_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
+            'id_user' => [
+                'type' => 'INT',
+                'constraint' => 11,
+                'unsigned' => true,
             ],
         ]);
         $this->forge->addKey('id_transaksi', true);
+        $this->forge->addKey('id_user');
         $this->forge->addForeignKey('id_user', 'users', 'id_user', 'CASCADE', 'CASCADE');
         $this->forge->createTable('transaksi');
 
-        // Create Detail Transaksi Table
+        // detail_transaksi
         $this->forge->addField([
             'id_detail' => [
                 'type' => 'INT',
@@ -194,16 +162,10 @@ class CreateTables extends Migration
                 'type' => 'DECIMAL',
                 'constraint' => '10,2',
             ],
-            'created_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
-            ],
-            'updated_at' => [
-                'type' => 'DATETIME',
-                'null' => true,
-            ],
         ]);
         $this->forge->addKey('id_detail', true);
+        $this->forge->addKey('id_transaksi');
+        $this->forge->addKey('id_obat');
         $this->forge->addForeignKey('id_transaksi', 'transaksi', 'id_transaksi', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('id_obat', 'obat', 'id_obat', 'CASCADE', 'CASCADE');
         $this->forge->createTable('detail_transaksi');

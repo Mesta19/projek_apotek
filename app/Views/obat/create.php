@@ -103,7 +103,7 @@
         </div>
         <div class="form-group mb-3">
             <label for="harga">Harga</label>
-            <input type="text" class="form-control <?= ($validation->hasError('harga')) ? 'is-invalid' : ''; ?>" id="harga" name="harga" value="<?= old('harga'); ?>">
+            <input type="number" min="0" step="1" class="form-control <?= ($validation->hasError('harga')) ? 'is-invalid' : ''; ?>" id="harga" name="harga" value="<?= old('harga'); ?>" inputmode="numeric" pattern="[0-9]*">
             <div class="invalid-feedback">
                 <?= $validation->getError('harga'); ?>
             </div>
