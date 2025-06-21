@@ -17,14 +17,14 @@ IF %ERRORLEVEL% NEQ 0 (
     exit /b 1
 ) ELSE (
     echo Menjalankan composer install...
-    composer install
+    call composer install
 )
 
 REM 2. Migrasi database
-php spark migrate
+call php spark migrate
 
 REM 3. Jalankan seeder database
-php spark db:seed DatabaseSeeder
+call php spark db:seed DatabaseSeeder
 
 echo.
 echo Instalasi selesai! Website siap dijalankan.
