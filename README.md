@@ -17,6 +17,41 @@ Website ini merupakan aplikasi kasir untuk apotek. Fitur utama:
 - Composer (https://getcomposer.org/)
 - Git (https://git-scm.com/)
 - **Koneksi internet diperlukan agar fitur scan barcode dan tampilan UI web dapat berfungsi dengan semestinya.**
+- **Ekstensi PHP yang WAJIB diaktifkan di `php.ini`:**
+  - `intl`
+  - `curl`
+  - `gd`
+  - `mbstring`
+  - `openssl`
+  - `pdo`
+  - `pdo_mysql`
+  - `fileinfo`
+  - `json`
+  - `xml`
+  - `zip`
+
+### Cara Mengaktifkan Ekstensi PHP di `php.ini`
+
+1. Buka XAMPP Control Panel, klik tombol **Config** pada bagian Apache, lalu pilih **php.ini**.
+2. Cari baris ekstensi yang ingin diaktifkan, misal: `;extension=intl`.
+3. Hapus tanda titik koma (`;`) di awal baris agar menjadi: `extension=intl`
+4. Lakukan hal yang sama untuk semua ekstensi yang dibutuhkan.
+5. Simpan file `php.ini` dan restart Apache melalui XAMPP agar perubahan berlaku.
+
+> Contoh baris yang harus diaktifkan:
+> ```ini
+> extension=intl
+> extension=curl
+> extension=gd
+> extension=mbstring
+> extension=openssl
+> extension=pdo
+> extension=pdo_mysql
+> extension=fileinfo
+> extension=json
+> extension=xml
+> extension=zip
+> ```
 
 > **Disarankan:** Selalu gunakan XAMPP, letakkan project di folder `htdocs` (misal: `C:/xampp/htdocs/`)
 
